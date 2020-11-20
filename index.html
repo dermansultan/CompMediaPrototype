@@ -1,0 +1,323 @@
+<html>
+
+<head>
+    <title>My first Three.js app</title>
+    <style>
+        /* Font  */
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        #header {
+            position: absolute;
+            width: 100%;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #logo {
+            margin-top: 8px;
+            width: 90%;
+            max-width: 640px;
+
+        }
+
+        .descBox {
+            position: absolute;
+            display: flex;
+            top: 50vh;
+            justify-content: center;
+            z-index: 2;
+            width: 100%;
+        }
+
+        .startBtn {
+            font-family: 'DM Sans', sans-serif;
+            width: 400px;
+            height: 70px;
+            border-radius: 15px;
+            background-color: #1D3557;
+            color: white;
+            border: 0;
+            font-size: 1.5em;
+            font-weight: 500;
+        }
+
+        .startBtn:hover {
+            background-color: #457B9D;
+            color: white;
+        }
+
+        .redBtn {
+            font-family: 'DM Sans', sans-serif;
+            width: 150px;
+            height: 40px;
+            border-radius: 15px;
+            background-color: #E63946;
+            color: white;
+            border: 0;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        #modalWrapper {
+            visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
+            align-content: stretch;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 3;
+        }
+
+        .modalContent {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: #1D3557;
+            color: white;
+            min-width: 350px;
+            min-height: 205px;
+            border-radius: 50px;
+        }
+
+        #seaWatch {
+            visibility: hidden;
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 8px;
+            right: 16px;
+            z-index: 4;
+        }
+
+        .progressBarLabelWrapper {
+            margin-left: 10px;
+            color: #1D3557;
+        }
+
+        #seaWatch progress {
+            margin-left: 15px;
+            border: 1px solid #1D3557;
+            width: 150px;
+            transform: rotate(270deg);
+            height: 150px;
+            background: #A8DADC;
+            margin-right: 15px;
+        }
+
+        #seaWatch progress {
+            color: lightblue;
+        }
+
+        #seaWatch progress::-webkit-progress-value {
+            background: lightblue;
+        }
+
+        #seaWatch progress::-moz-progress-bar {
+            background: #FFDA48;
+        }
+
+        #seaWatch progress::-webkit-progress-value {
+            background: #FFDA48;
+        }
+
+        #seaWatch progress::-webkit-progress-bar {
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="seaWatch">
+        <div class="progressBarLabelWrapper">
+            <h2>MAX</h2>
+            <h2>50%</h2>
+            <h2>0%</h2>
+        </div>
+        <progress id="seaLevel" value="10" max="100"> 32% </progress>
+    </div>
+    <div id="modalWrapper">
+        <div class="modalContent" id="modalContent">
+            <h2>The Sea Level Rises!</h2>
+            <p>This is a prototype modal test.</p>
+            <button class="redBtn" onclick="modalDisappear();">Continue</button>
+        </div>
+    </div>
+    <div id="header">
+        <img src="img/Logo.png" alt="Logo" id="logo">
+    </div>
+    <div class='descBox'>
+        <button class="startBtn" id="startBtn" onclick="start();">Begin</button>
+    </div>
+    </div>
+
+
+    <script src="js/three.min.js"></script>
+    <script src="js/Detector.js"></script>
+    <script src="js/ColladaLoader.js"></script>
+    <script src="js/tween.min.js"></script>
+
+    <script>
+        var scene, camera, renderer, raycaster;
+        var mouse = new THREE.Vector2(), INTERSECTED;
+        const startBtn = document.getElementById('startBtn');
+        const logo = document.getElementById('logo');
+        const modalWrapper = document.getElementById('modalWrapper');
+        const seaWatch = document.getElementById('seaWatch');
+        const seaLevel = document.getElementById('seaLevel');
+
+        function init() {
+            //add detector to see if WebGL is supported
+            if (!Detector.webgl) Detector.addGetWebGLMessage();
+            //set up a scene
+            scene = new THREE.Scene();
+            //add a camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            //render the scene - start renderer and set it's size
+            renderer = new THREE.WebGLRenderer({
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0xcaf8f1, 1);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            //add to webpage
+            document.body.appendChild(renderer.domElement);
+
+            var light = new THREE.DirectionalLight(0xffffff, 0.5);
+            light.position.set(1, 1, 1).normalize();
+            scene.add(light);
+
+            var loader = new THREE.ColladaLoader();
+            loader.options.convertUpAxis = true;
+            loader.load('scene.dae', function (collada) {
+
+                var dae = collada.scene;
+
+                dae.traverse(function (child) {
+
+                    if (child instanceof THREE.Mesh) {
+
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+
+                })
+
+
+                dae.scale.x = dae.scale.y = dae.scale.z = 10;
+                dae.updateMatrix();
+                scene.add(dae);
+
+
+                render();
+            });
+
+            //position camera
+            camera.position.set(0, 95, 150);
+
+            raycaster = new THREE.Raycaster();
+            document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+            //render the scene
+            //render();
+        }
+
+        function onDocumentMouseMove(event) {
+            event.preventDefault();
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        }
+
+        document.onmousedown = function (e) {
+
+            raycaster.setFromCamera(mouse, camera);
+            var intersects = raycaster.intersectObjects(scene.children, true);
+
+
+
+        }
+        
+        function seaLevelIncrement(){
+            seaLevel.value += 30;
+            // ToAdd: 3D Increment Tween of Sea model .
+        }
+        
+        function seaLevelAppear(){
+            seaWatch.style.visibility = 'visible';
+        }
+
+        function modalAppear() {
+            modalWrapper.style.visibility = "visible";
+        }
+
+        function modalDisappear() {
+            modalWrapper.style.visibility = "hidden";
+            seaLevelAppear();
+            setTimeout( () => {
+                seaLevelIncrement();
+            }, 1000);
+        }
+
+
+
+
+        function start() {
+            startBtn.style.display = "none";
+            logo.style.display = "none";
+            var pos1 = new TWEEN.Tween(camera.position).to({
+                x: -130,
+                y: 50,
+                z: -10
+            }, 4000).easing(TWEEN.Easing.Quadratic.InOut);
+            pos1.start();
+            modalAppear();
+        }
+
+
+
+
+        function render() {
+            //call to render scene 60fps
+            requestAnimationFrame(render);
+            camera.lookAt(scene.position);
+
+            //speed
+            var timer = Date.now() * 0.0001;
+
+            //distance
+            camera.lookAt(scene.position);
+
+            TWEEN.update();
+
+            //keep displaying scene
+            renderer.render(scene, camera);
+        }
+
+        //call the init function to run the code
+        init();
+
+    </script>
+</body>
+
+</html>
