@@ -177,7 +177,8 @@
     <script src="js/tween.min.js"></script>
 
     <script>
-        var scene, camera, renderer, raycaster;
+        var scene, camera, renderer, raycaster, particles, particleCount, particleSystem;
+        var textureLoader = new THREE.TextureLoader();
         var mouse = new THREE.Vector2(), INTERSECTED;
         const startBtn = document.getElementById('startBtn');
         const logo = document.getElementById('logo');
@@ -191,20 +192,20 @@
             //set up a scene
             scene = new THREE.Scene();
             //add a camera
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 4500);
             //render the scene - start renderer and set it's size
             renderer = new THREE.WebGLRenderer({
                 antialias: true
             });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0xcaf8f1, 1);
+            renderer.setClearColor(0xadd8e6, 0.5);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             //add to webpage
             document.body.appendChild(renderer.domElement);
 
-            var light = new THREE.DirectionalLight(0xffffff, 0.5);
-            light.position.set(1, 1, 1).normalize();
+            var light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(100, 500, 100).normalize();
             scene.add(light);
 
             var loader = new THREE.ColladaLoader();
@@ -228,18 +229,46 @@
                 dae.updateMatrix();
                 scene.add(dae);
 
-
-                render();
             });
 
+            //Particle System for Snow
+            particleCount = 10000;
+            particles = new THREE.Geometry();
+            var pMaterial = new THREE.PointsMaterial({
+                color: 0xFFFFFF,
+                size: 5,
+                map: textureLoader.load("snowflake.png"),
+                alphaTest: 0.3,
+                opacity: 0.9,
+                transparent: false
+            });
+
+
+            for (var i = 0; i < particleCount; i++) {
+                var pX = Math.random() * 3000 - 1500,
+                    pY = Math.random * 1000,
+                    pZ = Math.random() * 3000 - 1500;
+                var particle = new THREE.Vector3(pX, pY, pZ);
+                particle.velocity = new THREE.Vector3(0, -(Math.random() * 1.5), 0);
+
+                particles.vertices.push(particle)
+            }
+
+            particleSystem = new THREE.Points(particles, pMaterial);
+            particleSystem.sortParticles = true;
+            scene.add(particleSystem);
+
             //position camera
-            camera.position.set(0, 95, 150);
+            camera.position.set(-500, 250, -100);
+            camera.rotation.y = -0.5;
+            camera.rotation.x = -0.105;
+            // camera.rotation.x = -0.1052;
 
             raycaster = new THREE.Raycaster();
             document.addEventListener('mousemove', onDocumentMouseMove, false);
 
             //render the scene
-            //render();
+            render();
         }
 
         function onDocumentMouseMove(event) {
@@ -257,13 +286,13 @@
 
 
         }
-        
-        function seaLevelIncrement(){
+
+        function seaLevelIncrement() {
             seaLevel.value += 30;
             // ToAdd: 3D Increment Tween of Sea model .
         }
-        
-        function seaLevelAppear(){
+
+        function seaLevelAppear() {
             seaWatch.style.visibility = 'visible';
         }
 
@@ -274,7 +303,7 @@
         function modalDisappear() {
             modalWrapper.style.visibility = "hidden";
             seaLevelAppear();
-            setTimeout( () => {
+            setTimeout(() => {
                 seaLevelIncrement();
             }, 1000);
         }
@@ -286,9 +315,9 @@
             startBtn.style.display = "none";
             logo.style.display = "none";
             var pos1 = new TWEEN.Tween(camera.position).to({
-                x: -130,
-                y: 50,
-                z: -10
+                x: -550,
+                y: 350,
+                z: -50
             }, 4000).easing(TWEEN.Easing.Quadratic.InOut);
             pos1.start();
             modalAppear();
@@ -300,15 +329,32 @@
         function render() {
             //call to render scene 60fps
             requestAnimationFrame(render);
-            camera.lookAt(scene.position);
+            // camera.lookAt(scene.position);
 
             //speed
             var timer = Date.now() * 0.0001;
 
             //distance
-            camera.lookAt(scene.position);
+            // camera.lookAt(scene.position);
 
             TWEEN.update();
+
+            for (var i = 0; i < particleCount; i++) {
+                var ptcl = particles.vertices[i];
+                // check if it's below the ground and reset
+                if (ptcl.y < -10) {
+                    ptcl.y = 900;
+                    ptcl.velocity.y = -(Math.random() * 1);
+                    // console.log('snowflake reset')
+                }
+
+                ptcl.velocity.y -= Math.random() * 0.001;
+
+                ptcl.add(ptcl.velocity);
+
+            }
+
+            particles.verticesNeedUpdate = true;
 
             //keep displaying scene
             renderer.render(scene, camera);
