@@ -192,7 +192,7 @@
             //set up a scene
             scene = new THREE.Scene();
             //add a camera
-            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 4500);
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 4500);
             //render the scene - start renderer and set it's size
             renderer = new THREE.WebGLRenderer({
                 antialias: true
@@ -204,8 +204,8 @@
             //add to webpage
             document.body.appendChild(renderer.domElement);
 
-            var light = new THREE.DirectionalLight(0xffffff, 1);
-            light.position.set(100, 500, 100).normalize();
+            var light = new THREE.DirectionalLight(0xffffff, 1.45);
+            light.position.set(-1000, 1900, 100).normalize();
             scene.add(light);
 
             var loader = new THREE.ColladaLoader();
@@ -259,7 +259,7 @@
             scene.add(particleSystem);
 
             //position camera
-            camera.position.set(-500, 250, -100);
+            camera.position.set(-200, 190, 960);
             camera.rotation.y = -0.5;
             camera.rotation.x = -0.105;
             // camera.rotation.x = -0.1052;
@@ -314,12 +314,39 @@
         function start() {
             startBtn.style.display = "none";
             logo.style.display = "none";
+            // tent
+            // var pos1 = new TWEEN.Tween(camera.position).to({
+            //     x: 425,
+            //     y: 55,
+            //     z: 400
+            // }, 4000).easing(TWEEN.Easing.Quadratic.InOut);
+            
+            
+            // houses
+            // var pos1 = new TWEEN.Tween(camera.position).to({
+            //     x: 30,
+            //     y: 55,
+            //     z: 400
+            // }, 4000).easing(TWEEN.Easing.Quadratic.InOut);         
+            // var rot1 = new TWEEN.Tween(camera.rotation).to({
+            //     y: -0.65,
+            // }, 5000).easing(TWEEN.Easing.Quadratic.InOut);
+            
+            
+            // boat
             var pos1 = new TWEEN.Tween(camera.position).to({
-                x: -550,
-                y: 350,
-                z: -50
-            }, 4000).easing(TWEEN.Easing.Quadratic.InOut);
+                x: -1000,
+                y: 40,
+                z: 130
+            }, 1000).easing(TWEEN.Easing.Quadratic.InOut);         
+            var rot1 = new TWEEN.Tween(camera.rotation).to({
+                y: -1.5,
+            }, 1000).easing(TWEEN.Easing.Quadratic.InOut);    
+                
+
+
             pos1.start();
+            rot1.start();
             modalAppear();
         }
 
