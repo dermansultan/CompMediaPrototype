@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>My first Three.js app</title>
+    <title>Flood: Sea Levels on Rise</title>
     <style>
         /* Font  */
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
@@ -198,14 +198,14 @@
                 antialias: true
             });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0xadd8e6, 0.5);
+            renderer.setClearColor(0x2177c2, 0.5);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             //add to webpage
             document.body.appendChild(renderer.domElement);
 
-            var light = new THREE.DirectionalLight(0xffffff, 1.45);
-            light.position.set(-1000, 1900, 100).normalize();
+            var light = new THREE.DirectionalLight(0xffffff, 1.55);
+            light.position.set(0, 5500, -1600).normalize();
             scene.add(light);
 
             var loader = new THREE.ColladaLoader();
@@ -249,7 +249,7 @@
                     pY = Math.random * 1000,
                     pZ = Math.random() * 3000 - 1500;
                 var particle = new THREE.Vector3(pX, pY, pZ);
-                particle.velocity = new THREE.Vector3(0, -(Math.random() * 1.5), 0);
+                particle.velocity = new THREE.Vector3(0, -(Math.random() * 5.5), 0);
 
                 particles.vertices.push(particle)
             }
@@ -259,7 +259,7 @@
             scene.add(particleSystem);
 
             //position camera
-            camera.position.set(-200, 190, 960);
+            camera.position.set(-200, 190, -5000);
             camera.rotation.y = -0.5;
             camera.rotation.x = -0.105;
             // camera.rotation.x = -0.1052;
@@ -334,14 +334,48 @@
             
             
             // boat
+            // var pos1 = new TWEEN.Tween(camera.position).to({
+            //     x: -1000,
+            //     y: 40,
+            //     z: 130
+            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut);         
+            // var rot1 = new TWEEN.Tween(camera.rotation).to({
+            //     y: -1.5,
+            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut);  
+            
+            // Gas Tank
+            // var pos1 = new TWEEN.Tween(camera.position).to({
+            //     x: 500,
+            //     y: 50,
+            //     z: 53
+            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut);         
+            // var rot1 = new TWEEN.Tween(camera.rotation).to({
+            //     y: -0.90,
+            //     x: -0.05
+            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut);  
+
+
+            // Base and Car
             var pos1 = new TWEEN.Tween(camera.position).to({
-                x: -1000,
-                y: 40,
-                z: 130
+                x: 70,
+                y: 55,
+                z: 300
             }, 1000).easing(TWEEN.Easing.Quadratic.InOut);         
             var rot1 = new TWEEN.Tween(camera.rotation).to({
-                y: -1.5,
-            }, 1000).easing(TWEEN.Easing.Quadratic.InOut);    
+                y: -4
+            }, 1000).easing(TWEEN.Easing.Quadratic.InOut);  
+            
+            
+            // Oil Barrel Tanks
+            // var pos1 = new TWEEN.Tween(camera.position).to({
+            //     x: 215,
+            //     y: 65,
+            //     z: -60
+            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut);         
+            // var rot1 = new TWEEN.Tween(camera.rotation).to({
+            //     y: -0.90,
+            //     x: -0.05
+            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut); 
                 
 
 
