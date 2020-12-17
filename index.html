@@ -100,6 +100,19 @@
             margin-bottom: 20px;
         }
 
+        .finalWrapper {
+            visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
         .modalContentBio {
             width: 50%;
             text-align: center;
@@ -117,6 +130,10 @@
 
         .progressBarLabelWrapper {
             margin-left: 10px;
+            color: white;
+        }
+
+        .title.white {
             color: white;
         }
 
@@ -153,6 +170,11 @@
 </head>
 
 <body>
+    <div class="finalWrapper">
+        <img alt="305logo" class="threeofiveLogo" src="/img/350Logo.png">
+        <h2 class="title white">The base was submerged in water.</h2>
+        <h2 class="title white">Click the logo to learn how you can stop the sea levels from rising.</h2>
+    </div>
     <div id="seaWatch">
         <div class="progressBarLabelWrapper">
             <h2>MAX</h2>
@@ -184,6 +206,11 @@
     <script src="js/tween.min.js"></script>
 
     <script>
+
+        function visitPage() {
+            window.location = 'https://350.org/science/';
+        }
+
         var scene, camera, renderer, raycaster, particles, particleCount, particleSystem, water, waterHt = 1;
         var textureLoader = new THREE.TextureLoader();
         var mouse = new THREE.Vector2(), INTERSECTED;
@@ -193,9 +220,16 @@
         const logo = document.getElementById('logo');
         const modalWrapper = document.getElementById('modalWrapper');
         const modalContentTitle = modalWrapper.querySelector('.modalContentTitle');
+        const modalContentBtn = modalWrapper.querySelector('.redBtn');
         const modalContentBio = modalWrapper.querySelector('.modalContentBio');
         const seaWatch = document.getElementById('seaWatch');
         const seaLevel = document.getElementById('seaLevel');
+        const finalWrapper = document.querySelector('.finalWrapper');
+        const logo305 = finalWrapper.querySelector('.threeofiveLogo');
+
+        logo305.addEventListener('click', () => {
+            visitPage();
+        })
 
         console.log(modalContentTitle, modalContentBio);
 
@@ -275,7 +309,7 @@
             scene.add(particleSystem);
 
             //position camera
-            camera.position.set(-200, 190, -5000);
+            camera.position.set(-200, 390, 200);
             camera.rotation.y = -0.5;
             camera.rotation.x = -0.105;
             // camera.rotation.x = -0.1052;
@@ -325,6 +359,10 @@
             seaWatch.style.visibility = 'visible';
         }
 
+        function seaLevelDisappear() {
+            seaWatch.style.visibility = 'hidden';
+        }
+
         function modalAppear() {
             modalWrapper.style.visibility = "visible";
         }
@@ -346,12 +384,12 @@
             switch (place) {
                 case "tent":
                     console.log('taketoTent!')
-                    var pos1 = new TWEEN.Tween(camera.position).to({
+                    pos1 = new TWEEN.Tween(camera.position).to({
                         x: 425,
                         y: 55,
                         z: 400
                     }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
-                    var rot1 = new TWEEN.Tween(camera.rotation).to({
+                    rot1 = new TWEEN.Tween(camera.rotation).to({
                         y: -0.65,
                     }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
                     pos1.start();
@@ -363,12 +401,12 @@
                     modalContentBio.innerHTML = 'Since satellite records began 37 years ago, the Arctic’s sea ice has been in dramatic decline, losing on average 3.7% of its mass each decade.'
                     break;
                 case "boat":
-                    var pos1 = new TWEEN.Tween(camera.position).to({
+                    pos1 = new TWEEN.Tween(camera.position).to({
                         x: -1000,
                         y: 40,
                         z: 130
                     }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
-                    var rot1 = new TWEEN.Tween(camera.rotation).to({
+                    rot1 = new TWEEN.Tween(camera.rotation).to({
                         y: -1.5,
                     }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
                     pos1.start();
@@ -380,12 +418,12 @@
                     modalContentBio.innerHTML = 'In 2016 sea ice in the Arctic Ocean continued to melt during the polar winter — the first time this has been observed in modern history. '
                     break;
                 case "oilTubes":
-                    var pos1 = new TWEEN.Tween(camera.position).to({
+                    pos1 = new TWEEN.Tween(camera.position).to({
                         x: 215,
                         y: 65,
                         z: -60
                     }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
-                    var rot1 = new TWEEN.Tween(camera.rotation).to({
+                    rot1 = new TWEEN.Tween(camera.rotation).to({
                         y: -0.90,
                         x: -0.05
                     }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
@@ -398,12 +436,12 @@
                     modalContentBio.innerHTML = 'Some parts were 20 degrees C warmer than usual. Severe “snowmageddon” winters are very likely linked to the rapidly increasing polar temperatures, with deadly summer heatwaves and intense flooding probably also linked.'
                     break;
                 case "oilTank":
-                    var pos1 = new TWEEN.Tween(camera.position).to({
+                    pos1 = new TWEEN.Tween(camera.position).to({
                         x: 500,
                         y: 50,
                         z: 53
                     }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
-                    var rot1 = new TWEEN.Tween(camera.rotation).to({
+                    rot1 = new TWEEN.Tween(camera.rotation).to({
                         y: -0.90,
                         x: -0.05
                     }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
@@ -416,14 +454,14 @@
                     modalContentBio.innerHTML = 'If emissions continue unabated. Recent research shows that the Antarctic contribution to sea level rise is close to zero for up to 1.5 degrees Celsius warming, then jumps to at least 2 metres once we pass approximately 2 degrees Celsius.'
                     break;
                 case "houses":
-                    var pos1 = new TWEEN.Tween(camera.position).to({
+                    pos1 = new TWEEN.Tween(camera.position).to({
                         x: 30,
-                        y: 55,
+                        y: 70,
                         z: 400
-                    }, 4000).easing(TWEEN.Easing.Quadratic.InOut);
-                    var rot1 = new TWEEN.Tween(camera.rotation).to({
+                    }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
+                    rot1 = new TWEEN.Tween(camera.rotation).to({
                         y: -0.65,
-                    }, 5000).easing(TWEEN.Easing.Quadratic.InOut);
+                    }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
                     pos1.start();
                     rot1.start();
                     setTimeout(() => {
@@ -434,56 +472,29 @@
                     break;
 
                 case "gameEnd":
-                    modalContentTitle.innerHTML = 'Its never too late to change.'
-                    modalContentBio.innerHTML = 'Oh the base is under water... visit 305 to learn how you can stop this from being our future.S'
+                    pos1 = new TWEEN.Tween(camera.position).to({
+                        x: -200,
+                        y: 390,
+                        z: 200
+                    }, 2000).easing(TWEEN.Easing.Quadratic.InOut);
+                    rot1 = new TWEEN.Tween(camera.rotation).to({
+                        y: -0.65,
+                    }, 500).easing(TWEEN.Easing.Quadratic.InOut);
+                    pos1.start();
+                    rot1.start();
+                    seaLevelDisappear();
+                    setTimeout(() => {
+                        finalWrapper.style.visibility = 'visible';
+                    }, 2500);
                     break;
+
             }
         }
+
 
         function start() {
             startBtn.style.display = "none";
             logo.style.display = "none";
-            // tent
-            // var pos1 = new TWEEN.Tween(camera.position).to({
-            //     x: 425,
-            //     y: 55,
-            //     z: 400
-            // }, 4000).easing(TWEEN.Easing.Quadratic.InOut);
-
-
-            // houses
-            // var pos1 = new TWEEN.Tween(camera.position).to({
-            //     x: 30,
-            //     y: 55,
-            //     z: 400
-            // }, 4000).easing(TWEEN.Easing.Quadratic.InOut);         
-            // var rot1 = new TWEEN.Tween(camera.rotation).to({
-            //     y: -0.65,
-            // }, 5000).easing(TWEEN.Easing.Quadratic.InOut);
-
-
-            // boat
-            // var pos1 = new TWEEN.Tween(camera.position).to({
-            //     x: -1000,
-            //     y: 40,
-            //     z: 130
-            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut);         
-            // var rot1 = new TWEEN.Tween(camera.rotation).to({
-            //     y: -1.5,
-            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut);  
-
-            // Gas Tank
-            // var pos1 = new TWEEN.Tween(camera.position).to({
-            //     x: 500,
-            //     y: 50,
-            //     z: 53
-            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut);         
-            // var rot1 = new TWEEN.Tween(camera.rotation).to({
-            //     y: -0.90,
-            //     x: -0.05
-            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut);  
-
-
             // Base and Car
             var pos1 = new TWEEN.Tween(camera.position).to({
                 x: 70,
@@ -493,10 +504,6 @@
             var rot1 = new TWEEN.Tween(camera.rotation).to({
                 y: -4
             }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
-
-
-
-
             pos1.start();
             rot1.start();
             modalAppear();
