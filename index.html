@@ -74,7 +74,7 @@
             display: flex;
             flex-direction: column;
             flex-wrap: nowrap;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: center;
             align-content: stretch;
             position: fixed;
@@ -82,7 +82,6 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
             z-index: 3;
         }
 
@@ -98,6 +97,7 @@
             min-height: 205px;
             border-radius: 50px;
             padding-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .modalContentBio {
@@ -117,7 +117,7 @@
 
         .progressBarLabelWrapper {
             margin-left: 10px;
-            color: #1D3557;
+            color: white;
         }
 
         #seaWatch progress {
@@ -184,7 +184,7 @@
     <script src="js/tween.min.js"></script>
 
     <script>
-        var scene, camera, renderer, raycaster, particles, particleCount, particleSystem;
+        var scene, camera, renderer, raycaster, particles, particleCount, particleSystem, water, waterHt = 1;
         var textureLoader = new THREE.TextureLoader();
         var mouse = new THREE.Vector2(), INTERSECTED;
         let step = 0;
@@ -192,8 +192,12 @@
         const startBtn = document.getElementById('startBtn');
         const logo = document.getElementById('logo');
         const modalWrapper = document.getElementById('modalWrapper');
+        const modalContentTitle = modalWrapper.querySelector('.modalContentTitle');
+        const modalContentBio = modalWrapper.querySelector('.modalContentBio');
         const seaWatch = document.getElementById('seaWatch');
         const seaLevel = document.getElementById('seaLevel');
+
+        console.log(modalContentTitle, modalContentBio);
 
         function init() {
             //add detector to see if WebGL is supported
@@ -237,6 +241,9 @@
                 dae.scale.x = dae.scale.y = dae.scale.z = 10;
                 dae.updateMatrix();
                 scene.add(dae);
+
+                water = scene.getObjectByName("Ocean", true);
+                console.log(water);
 
             });
 
@@ -296,9 +303,22 @@
 
         }
 
+        function resetModalContent() {
+            modalContentTitle.innerHTML = '';
+            modalContentBio.innerHTML = '';
+            console.log(modalContentTitle, modalContentBio);
+        }
+
         function seaLevelIncrement() {
-            seaLevel.value += 30;
+            seaLevel.value += 20;
             // ToAdd: 3D Increment Tween of Sea model .
+            if (water) {
+                waterHt += 0.25;
+                new TWEEN.Tween(water.scale).to({
+                    y: waterHt
+                }, 800).easing(TWEEN.Easing.Quadratic.InOut).start();
+            }
+            console.log('incremented!')
         }
 
         function seaLevelAppear() {
@@ -311,10 +331,9 @@
 
         function modalDisappear() {
             modalWrapper.style.visibility = "hidden";
+            resetModalContent();
             seaLevelAppear();
-            setTimeout(() => {
-                seaLevelIncrement();
-            }, 1000);
+            seaLevelIncrement();
             step += 1;
             console.log(step);
             checkStep();
@@ -331,15 +350,17 @@
                         x: 425,
                         y: 55,
                         z: 400
-                    }, 500).easing(TWEEN.Easing.Quadratic.InOut);
+                    }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
                     var rot1 = new TWEEN.Tween(camera.rotation).to({
                         y: -0.65,
-                    }, 500).easing(TWEEN.Easing.Quadratic.InOut);
+                    }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
                     pos1.start();
                     rot1.start();
                     setTimeout(() => {
                         modalAppear();
                     }, 500);
+                    modalContentTitle.innerHTML = 'Odd a tent in the forest...'
+                    modalContentBio.innerHTML = 'Since satellite records began 37 years ago, the Arctic’s sea ice has been in dramatic decline, losing on average 3.7% of its mass each decade.'
                     break;
                 case "boat":
                     var pos1 = new TWEEN.Tween(camera.position).to({
@@ -355,6 +376,8 @@
                     setTimeout(() => {
                         modalAppear();
                     }, 500);
+                    modalContentTitle.innerHTML = 'Wait that was the Boat we came here on...?'
+                    modalContentBio.innerHTML = 'In 2016 sea ice in the Arctic Ocean continued to melt during the polar winter — the first time this has been observed in modern history. '
                     break;
                 case "oilTubes":
                     var pos1 = new TWEEN.Tween(camera.position).to({
@@ -371,6 +394,8 @@
                     setTimeout(() => {
                         modalAppear();
                     }, 500);
+                    modalContentTitle.innerHTML = 'Our Oil tubes are getting loud'
+                    modalContentBio.innerHTML = 'Some parts were 20 degrees C warmer than usual. Severe “snowmageddon” winters are very likely linked to the rapidly increasing polar temperatures, with deadly summer heatwaves and intense flooding probably also linked.'
                     break;
                 case "oilTank":
                     var pos1 = new TWEEN.Tween(camera.position).to({
@@ -387,6 +412,8 @@
                     setTimeout(() => {
                         modalAppear();
                     }, 500);
+                    modalContentTitle.innerHTML = 'A strange noise comes from the Oil Tank'
+                    modalContentBio.innerHTML = 'If emissions continue unabated. Recent research shows that the Antarctic contribution to sea level rise is close to zero for up to 1.5 degrees Celsius warming, then jumps to at least 2 metres once we pass approximately 2 degrees Celsius.'
                     break;
                 case "houses":
                     var pos1 = new TWEEN.Tween(camera.position).to({
@@ -402,6 +429,13 @@
                     setTimeout(() => {
                         modalAppear();
                     }, 500);
+                    modalContentTitle.innerHTML = 'Oh no the houses!'
+                    modalContentBio.innerHTML = 'Because glaciers are so sensitive to small temperature changes, even if we stopped emissions now, many glaciers will still disappear. But action now to keep fossil fuels in the ground can still save many glaciers.'
+                    break;
+
+                case "gameEnd":
+                    modalContentTitle.innerHTML = 'Its never too late to change.'
+                    modalContentBio.innerHTML = 'Oh the base is under water... visit 305 to learn how you can stop this from being our future.S'
                     break;
             }
         }
@@ -461,17 +495,6 @@
             }, 1000).easing(TWEEN.Easing.Quadratic.InOut);
 
 
-            // Oil Barrel Tanks
-            // var pos1 = new TWEEN.Tween(camera.position).to({
-            //     x: 215,
-            //     y: 65,
-            //     z: -60
-            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut);         
-            // var rot1 = new TWEEN.Tween(camera.rotation).to({
-            //     y: -0.90,
-            //     x: -0.05
-            // }, 1000).easing(TWEEN.Easing.Quadratic.InOut); 
-
 
 
             pos1.start();
@@ -495,6 +518,9 @@
                     break;
                 case 5:
                     takeTo("houses");
+                    break;
+                case 6:
+                    takeTo("gameEnd");
                     break;
             }
 
