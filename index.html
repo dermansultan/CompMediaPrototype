@@ -312,10 +312,7 @@
             camera.position.set(-200, 390, 200);
             camera.rotation.y = -0.5;
             camera.rotation.x = -0.105;
-            // camera.rotation.x = -0.1052;
-
-            raycaster = new THREE.Raycaster();
-            document.addEventListener('mousemove', onDocumentMouseMove, false);
+            
 
             //render the scene
             render();
@@ -414,7 +411,7 @@
                     setTimeout(() => {
                         modalAppear();
                     }, 500);
-                    modalContentTitle.innerHTML = 'Wait that was the Boat we came here on...?'
+                    modalContentTitle.innerHTML = 'The ship we came here on...'
                     modalContentBio.innerHTML = 'In 2016 sea ice in the Arctic Ocean continued to melt during the polar winter — the first time this has been observed in modern history. '
                     break;
                 case "oilTubes":
